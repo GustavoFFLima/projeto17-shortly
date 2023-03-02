@@ -1,59 +1,45 @@
 import bcrypt from "bcrypt"
 import { v4 as uuidV4 } from "uuid"
 import db from "../config/database.js"
-import { usuarioSchema } from "../model/AuthSchema.js"
-
 
 export async function signUp (req, res) {
-    const { name, email, password, confirmPassword } = req.body
+    const { name, email, password } = req.body
 
-    const { error } = usuarioSchema.validate({ name, email, password, confirmPassword })
+    const hashPassword = bcrypt.hashSync(password, 10)
 
-    if (error) {
-        const errorMessages = error.details.map(err => err.message)
-        return res.status(422).send(errorMessages)
-    }
+     try {
+        const checkUser = await db.query("SELECT * FROM users WHERE email=$1", [email])
+        
+        if(checkUser.rowCount > 0) return res.sendStatus(409)
 
-    const passwordHashed = bcrypt.hashSync(password, 10)
+        await db.query (`INSERT INTO users 
+        (name, email, password) 
+        VALUES ($1, $2, $3);`, [name, email, hashPassword]);
 
-    try {
-        const checkUser = await db.collection('usuarios').findOne({ email })
-        if (checkUser) return res.status(409).send("Usuário ou senha incorretos")
-
-        await db.collection("usuarios").insertOne({ name, email, password: passwordHashed })
-        res.status(201).send("Usuário cadastrado com sucesso!")
-
+        res.sendStatus(201);
     } catch (error) {
-        res.status(500).send(error.message)
+        res.status(500).send(error.message);
     }
 }
   
 export async function signIn (req, res) {
     const { email, password } = req.body
-    const { error } = usuarioSchema.validate({ email, password })
+    const authtoken = uuidV4();
 
-    if (error) {
-        const errorMessages = error.details.map(err => err.message)
-        return res.status(422).send(errorMessages)
-    }
-    
     try {
 
-        const checkUser = await db.collection('usuarios').findOne({ email })
+        const existe = await db.query(`SELECT * FROM users WHERE email = $1;`, [email])
+        if (existe.rowCount === 0) return res.sendstatus(409)
+    
+        const {id, password:hash} = existe.rows[0]
+        const senhaCorreta= bcrypt.compareSync(password, hash);
+        if(!senhaCorreta) return res.sendstatus(409)
 
-        if (!checkUser) return res.status(401).send("Usuário ou senha incorretos")
+        await db.query(`INSERT ONE sessions (email, token, "userId") VALUES ($1, $2, $3)`, [email, authToken, verifyPassword.rows[0].id])
 
-        const isCorrectPassword = bcrypt.compareSync(password, checkUser.password)
-
-        if (!isCorrectPassword) return res.status(401).send("Usuário ou senha incorretos")
-
-        const token = uuidV4();
-
-        await db.collection("sessoes").insertOne({ idUsuario: checkUser._id, token })
-
-        return res.status(200).send(token)
+        return res.status(200).send({authtoken});
 
     } catch (error) {
-        res.status(500).send(error.message)
+        return res.status(500).send(error.message)
     }
 }
