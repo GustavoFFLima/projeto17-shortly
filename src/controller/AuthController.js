@@ -34,11 +34,9 @@ export async function signIn (req, res) {
         const senhaCorreta= bcrypt.compareSync(password, hash);
         if(!senhaCorreta) return res.sendstatus(409)
 
-        console.log(existe.rows[0].id)
-
         await db.query(`INSERT INTO sessions ("userToken", "userId") VALUES ($1, $2)`, [authToken, existe.rows[0].id])
 
-        return res.status(200).send(authToken);
+        return res.status(200).send( { token:authToken });
 
     } catch (error) {
         return res.status(500).send(error.message)
