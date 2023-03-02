@@ -8,8 +8,8 @@ const users = {
           `
           SELECT users.id, users.name, SUM("visitsCount") AS "visitCount"
           FROM users
-          JOIN shorturls
-            ON shorturls."userId" = users.id
+          JOIN url
+            ON url."userId" = users.id
           WHERE users.id = $1
           GROUP BY users.id
           `,
@@ -19,7 +19,7 @@ const users = {
         .query(
           `
         SELECT id, "shortUrl", url, "visitsCount" AS "visitCount" 
-        FROM shorturls
+        FROM url
         WHERE "userId" = $1
         ORDER BY id ASC
         `,
@@ -36,8 +36,8 @@ const users = {
         .query(`
           SELECT users.id, users.name, SUM("visitsCount") as "visitCount", COUNT("shortUrl") AS "linksCount" 
           FROM users
-          JOIN shorturls
-            ON shorturls."userId" = users.id
+          JOIN url
+            ON url."userId" = users.id
           GROUP BY users.id
           ORDER BY "visitCount" DESC
           LIMIT 10;

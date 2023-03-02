@@ -1,22 +1,27 @@
 import { nanoid } from "nanoid";
-import shortUrl from "../config/queries/urlQueries.js";
+import { db } from "../config/database.js";
 
 export async function shorten (req, res) {
-    const { url } = req.body;
-    const { userId } = res.locals;
-    const identification = nanoid();
-    try {
-      const { success, id, error } = await shortUrl.create({
-        url,
-        shortUrl: identification,
-        userId
-      });
-      if (!success) {
-        return res.sendStatus(500);
-      }
-      return res.sendStatus(201);
-    } catch (error) {
-      return res.sendStatus(500);
+  const { url } = req.body;
+  const identification = nanoid();
+  const { authorization: bearerToken } = req.headers
+    
+  const authToken = bearerToken.replace("Bearer ", "")
+  if(!authToken) return res.status(401).send("token não informado");
+
+    try{
+        const session = await db.query(`SELECT * FROM sessions WHERE "userToken"=$1`,[authToken])
+
+        await db.query(`INSERT INTO url ("short", url, "userId", "visitCount") VALUES ($1,$2,$3, 0)`, [identification, url, session.rows[0].userId])
+
+        const urlId = await db.query(`SELECT * FROM url WHERE "short"=$1`,[identification])
+
+        res.status(201).send({
+            id: urlId.rows[0].id,
+            shortUrl: identification
+        })
+    }catch(error){
+        res.status(500).send(error.message)
     }
   }
 

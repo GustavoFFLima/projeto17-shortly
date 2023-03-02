@@ -5,7 +5,7 @@ const shortUrl = {
     try {
       const { rows: [{ id }] } = await db
         .query(
-          'INSERT INTO "shorturls" ("shortUrl", url, "userId") values ($1, $2, $3) RETURNING id',
+          'INSERT INTO "url" ("shortUrl", url, "userId") values ($1, $2, $3) RETURNING id',
           [shortUrl, url, userId]
         );
       return { success: true, id, error: undefined };
@@ -15,7 +15,7 @@ const shortUrl = {
   },
   getById: async (id) => {
     try {
-      const { rows: [url] } = await db.query('SELECT id, "shortUrl", url, "userId" FROM shorturls WHERE id = $1', [id]);
+      const { rows: [url] } = await db.query('SELECT id, "shortUrl", url, "userId" FROM url WHERE id = $1', [id]);
       return { success: true, url, error: undefined };
     } catch (error) {
       return { success: false, url: undefined, error };
@@ -23,7 +23,7 @@ const shortUrl = {
   },
   getByShortUrl: async (identifier) => {
     try {
-      const { rows: [url] } = await db.query('SELECT id, url FROM shorturls WHERE "shortUrl" = $1', [identifier]);
+      const { rows: [url] } = await db.query('SELECT id, url FROM url WHERE "shortUrl" = $1', [identifier]);
       return { success: true, url, error: undefined };
     } catch (error) {
       return { success: false, url: undefined, error };
@@ -31,7 +31,7 @@ const shortUrl = {
   },
   incrementVisitsCountById: async (id) => {
     try {
-      await db.query('UPDATE shorturls SET "visitsCount" = "visitsCount" + 1 WHERE id = $1', [id]);
+      await db.query('UPDATE url SET "visitsCount" = "visitsCount" + 1 WHERE id = $1', [id]);
       return { success: true, error: undefined };
     } catch (error) {
       return { success: false, error };
@@ -39,7 +39,7 @@ const shortUrl = {
   },
   delete: async (id) => {
     try {
-      await db.query('DELETE FROM shorturls WHERE id = $1', [id]);
+      await db.query('DELETE FROM url WHERE id = $1', [id]);
       return { success: true, error: undefined };
     } catch (error) {
       return { success: false, error };
