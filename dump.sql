@@ -36,7 +36,7 @@ CREATE TABLE public.sessions (
 -- Name: sessions_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.sessions.id
+CREATE SEQUENCE public.sessions_id
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -63,7 +63,7 @@ CREATE TABLE public.url (
 -- Name: url_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.url.id
+CREATE SEQUENCE public.url_id
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -88,7 +88,7 @@ CREATE TABLE public.users (
 -- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.users.id
+CREATE SEQUENCE public.users_id
     AS integer
     START WITH 1
     INCREMENT BY 1
