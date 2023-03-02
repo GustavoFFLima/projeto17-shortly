@@ -1,5 +1,5 @@
 import { nanoid } from "nanoid";
-import shortUrl from "../db/queries/urlQueries.js";
+import shortUrl from "../config/queries/urlQueries.js";
 
 export async function shorten (req, res) {
     const { url } = req.body;

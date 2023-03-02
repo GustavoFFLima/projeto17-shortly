@@ -10,3 +10,5 @@ urlRouter.post('/urls/shorten', validateToken, validateSchema(urlSchemas), short
 urlRouter.get('/urls/:id', getShortUrlById)
 urlRouter.get('/urls/open/:shortUrl', redirectShortUrl)
 urlRouter.delete('/urls/:id', validateToken, deleteShortUrl)
+
+export default urlRouter
