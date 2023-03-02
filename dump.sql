@@ -25,7 +25,7 @@ SET default_table_access_method = heap;
 --
 
 CREATE TABLE public.sessions (
-    id integer NOT NULL,
+    id serial,
     "userId" integer NOT NULL,
     "userToken" character varying(200) NOT NULL,
     "createdAt" timestamp without time zone DEFAULT now() NOT NULL
@@ -50,7 +50,7 @@ CREATE SEQUENCE public.sessions_id
 --
 
 CREATE TABLE public.url (
-    id integer NOT NULL,
+    id serial,
     "userId" integer NOT NULL,
     url text NOT NULL,
     short character varying(150) NOT NULL,
@@ -76,7 +76,7 @@ CREATE SEQUENCE public.url_id
 --
 
 CREATE TABLE public.users (
-    id integer NOT NULL,
+    id serial,
     name character varying(100) NOT NULL,
     email character varying(100) NOT NULL,
     password character varying(60) NOT NULL,
@@ -99,3 +99,4 @@ CREATE SEQUENCE public.users_id
 --
 -- PostgreSQL database dump complete
 --
+

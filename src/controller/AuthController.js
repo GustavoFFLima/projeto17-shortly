@@ -9,7 +9,6 @@ export async function signUp (req, res) {
 
      try {
         const checkUser = await db.query("SELECT * FROM users WHERE email=$1", [email])
-        
         if(checkUser.rowCount > 0) return res.sendStatus(409)
 
         await db.query (`INSERT INTO users 

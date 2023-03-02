@@ -6,3 +6,6 @@ export const userRouter = Router();
 
 userRouter.get('/users/me', validateToken, getUser);
 userRouter.get('/ranking', getRanking);
+
+
+export default userRouter
