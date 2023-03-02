@@ -23,7 +23,7 @@ export async function signUp (req, res) {
   
 export async function signIn (req, res) {
     const { email, password } = req.body
-    const authtoken = uuidV4();
+    const authToken = uuidV4();
 
     try {
 
@@ -34,9 +34,11 @@ export async function signIn (req, res) {
         const senhaCorreta= bcrypt.compareSync(password, hash);
         if(!senhaCorreta) return res.sendstatus(409)
 
-        await db.query(`INSERT ONE sessions (email, token, "userId") VALUES ($1, $2, $3)`, [email, authToken, verifyPassword.rows[0].id])
+        console.log(existe.rows[0].id)
 
-        return res.status(200).send({authtoken});
+        await db.query(`INSERT INTO sessions ("userToken", "userId") VALUES ($1, $2)`, [authToken, existe.rows[0].id])
+
+        return res.status(200).send(authToken);
 
     } catch (error) {
         return res.status(500).send(error.message)
