@@ -28,12 +28,10 @@ export async function signIn (req, res) {
     try {
 
         const existe = await db.query(`SELECT * FROM users WHERE email = $1;`, [email])
-        console.log(existe)
         if (existe.rowCount === 0) return res.sendStatus(401)
         
         const {id, password:hash} = existe.rows[0]
         const senhaCorreta= bcrypt.compareSync(password, hash);
-        console.log(senhaCorreta)
         if(!senhaCorreta) return res.sendStatus(401)
 
 

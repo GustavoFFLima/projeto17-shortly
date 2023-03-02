@@ -12,12 +12,11 @@ export async function shorten (req, res) {
         userId
       });
       if (!success) {
-        console.log(error);
-        return res.status(500).send('DB com problema');
+        return res.sendStatus(500);
       }
-      return res.status(201).send({ id, shortUrl: identification });
+      return res.sendStatus(201);
     } catch (error) {
-      return res.status(500).send('Problema no servidor');
+      return res.sendStatus(500);
     }
   }
 
@@ -26,14 +25,12 @@ export async function getShortUrlById (req, res) {
     try {
       const { success, url, error } = await shortUrl.getById(id);
       if (!success) {
-        console.log(error);
-        res.status(500).send('DB com problema');
+        res.sendStatus(500);
       }
       if (!url) res.sendStatus(404);
       return res.send(url);
     } catch (error) {
-      console.log(error);
-      res.status(500).send('Problema no servidor');
+      res.sendStatus(500);
     }
   }
 
@@ -42,18 +39,16 @@ export async function redirectShortUrl (req, res) {
     try {
       const { success, url, error } = await shortUrl.getByShortUrl(identification);
       if (!success) {
-        console.log(error);
-        return res.status(500).send('DB com problema');
+        return res.sendStatus(500);
       }
       if (!url) return res.sendStatus(404);
       const { success: incrementSuccess, error: incrementError } = await shortUrl.incrementVisitsCountById(url.id);
       if (!incrementSuccess) {
-        console.log(incrementError);
-        return res.status(500).send('DB com problema');
+        return res.sendStatus(500);
       }
       return res.redirect(url.url);
     } catch (error) {
-      return res.status(500).send('Problema no servidor!');
+      return res.sendStatus(500);
     }
   }
 
@@ -63,16 +58,13 @@ export async function deleteShortUrl (req, res) {
     try {
       const { success, url, error } = await shortUrl.getById(id);
       if (!success) {
-        console.log(error);
-        return res.status(500).send('DB com problema!');
+        return res.sendStatus(500);
       }
       if (!url) return res.sendStatus(404);
-      console.log(url);
       if (url.userId !== userId) return res.sendStatus(401);
       const { success: deleteSuccess, error: deleteError } = await shortUrl.delete(id);
       if (!deleteSuccess) {
-        console.log(deleteError);
-        return res.status(500).send('DB com problema');
+        return res.sendStatus(500);
       }
       return res.sendStatus(204);
     } catch (error) {
