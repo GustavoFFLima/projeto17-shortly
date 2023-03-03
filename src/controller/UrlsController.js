@@ -51,9 +51,9 @@ export async function redirectUrl (req, res) {
 
       const upVisits = redirectUrl.rows[0].visitCount +1
       await db.query(`UPDATE url SET "visitCount" = $1 WHERE "id" = $2`, [upVisits, identification])
-      console.log(upVisits)
       const url = redirectUrl.rows[0].url
-      return res.redirect( url)
+      console.log(upVisits)
+      return res.redirect(302, url)
 
     } catch (error) {
       return res.status(500).send(error.message);
