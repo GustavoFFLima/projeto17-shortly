@@ -46,7 +46,6 @@ export async function redirectUrl (req, res) {
   const identification = req.params.shortUrl;
   try{
     const redirectUrl = await db.query(`SELECT * FROM url WHERE "short"=$1`,[identification])
-    console.log(identification)
     if(!redirectUrl) {
       return res.sendStatus(404)
     }
