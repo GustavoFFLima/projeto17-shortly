@@ -32,9 +32,9 @@ export async function getUrlById (req, res) {
     try {
       const checkUrl = await db.query('SELECT * FROM url WHERE id = $1', [reqUrlId]);
     
-      const { id, userId, url, shotUrl, visitCount, createdAt } = checkUrl.rows[0]
+      const { id, userId, url, shortUrl, visitCount, createdAt } = checkUrl.rows[0]
       if (checkUrl.rows === 0) return res.sendStatus(404);
-      return res.send({id, shotUrl, url});
+      return res.send({id, shortUrl, url});
 
     } catch (error) {
       res.status(500).send(error.message);
@@ -61,17 +61,17 @@ export async function deleteUrl (req, res) {
     const { userId } = res.locals;
     try {
       const deleteUrl = await db.query('DELETE FROM url WHERE id = $1', [id])
-      const { success, url, error } = await shortUrl.getById(id);
-      if (!success) {
-        return res.sendStatus(500);
+      const selecUrl = await db.query(`SELECT * FROM url WHERE id=$1;`, [id]);
+      if (selecUrl.rowCount === 0) return res.status(404).send("Epa! Não encontramos essa URL!")
+      if(userId !== selecUrl.rows[0].userId) {
+          return res.status(401).send("Essa URL não te pertence, colega! Não pode deletá-la!")
+
+      }else{
+        return deleteUrl
       }
-      if (!url) return res.sendStatus(404);
-      if (url.userId !== userId) return res.sendStatus(401);
-      const { success: deleteSuccess, error: deleteError } = await shortUrl.delete(id);
-      if (!deleteSuccess) {
-        return res.sendStatus(500);
-      }
-      return res.status(204).send({ success: true, error: undefined })
+
+      res.status(204).send("URL deletada!");
+       
     } catch (error) {
       res.status(500).send(error.message);
     }
