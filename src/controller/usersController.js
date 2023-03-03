@@ -2,14 +2,16 @@ import { db } from "../config/database.js";
 
 export async function getUser (req, res) {
     const { id } = res.locals;
+    console.log(res.local)
     const { authorization: bearerToken } = req.headers
-      
+    if(!bearerToken) return res.sendStatus(401)
     const authToken = bearerToken.replace("Bearer ", "")
-    if(!authToken) return res.status(401).send("token não informado")
 
     try {
-      const userInfo = await db
-        .query(
+      const session = await db.query("SELECT * FROM sessions WHERE userToken=$1", [authToken])
+
+        if(session.rowCount == 0) return res.sendStatus(401)
+      const userInfo = await db.query(
           `
           SELECT 
   users.id AS "id", 
