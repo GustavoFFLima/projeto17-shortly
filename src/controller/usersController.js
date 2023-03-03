@@ -2,10 +2,10 @@ import { db } from "../config/database.js";
 
 export async function getUser (req, res) {
     const { id } = res.locals;
-    // const { authorization: bearerToken } = req.headers
+    const { authorization: bearerToken } = req.headers
       
-    // const authToken = bearerToken.replace("Bearer ", "")
-    // if(!authToken) return res.status(401).send("token não informado")
+    const authToken = bearerToken.replace("Bearer ", "")
+    if(!authToken) return res.status(401).send("token não informado")
 
     try {
       const userInfo = await db
