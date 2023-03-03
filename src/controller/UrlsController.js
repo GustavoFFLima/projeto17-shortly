@@ -32,9 +32,9 @@ export async function getUrlById (req, res) {
     try {
       const checkUrl = await db.query('SELECT * FROM url WHERE id = $1', [reqUrlId]);
     
-      const { id, userId, url, shotUrl:short, visitCount, createdAt } = checkUrl.rows[0]
+      const { id, userId, url, short, visitCount, createdAt } = checkUrl.rows[0]
       if (checkUrl.rows === 0) return res.sendStatus(404);
-      return res.send({id, shotUrl, url});
+      return res.send({id, shotUrl:short, url});
 
     } catch (error) {
       res.status(500).send(error.message);
@@ -44,20 +44,19 @@ export async function getUrlById (req, res) {
 export async function redirectUrl (req, res) {
     const identification = req.params.shortUrl;
     try {
-      const { success, url, error } = await shortUrl.getByShortUrl(identification);
-      if (!success) {
-        return res.sendStatus(500);
-      }
+      const { success, url, error }= await db.query('SELECT id, url FROM url WHERE "shortUrl" = $1', [identification])
+      if (!success) return res.sendStatus(500)
       if (!url) return res.sendStatus(404);
       const { success: incrementSuccess, error: incrementError } = await shortUrl.incrementVisitsCountById(url.id);
       if (!incrementSuccess) {
         return res.sendStatus(500);
+      return { success: true, url, error: undefined }
       }
       return res.redirect(url.url);
     } catch (error) {
-      return res.sendStatus(500);
+      return res.status(500).send({ success: false, url: undefined, error });
     }
-  }
+}
 
 export async function deleteUrl (req, res) {
     const { id } = req.params;
