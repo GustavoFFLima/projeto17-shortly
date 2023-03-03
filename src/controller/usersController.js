@@ -19,7 +19,7 @@ export async function getUser (req, res) {
     SELECT JSON_BUILD_OBJECT(
       'id', url.id,
       'short', url."short",
-      'url', url.urL,
+      'url', url.url,
       'visitCount', url."visitCount"
     )
     FROM url
