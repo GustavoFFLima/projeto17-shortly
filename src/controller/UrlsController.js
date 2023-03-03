@@ -61,24 +61,28 @@ export async function redirectUrl (req, res) {
 }
 
 export async function deleteUrl (req, res) {
-    const { authorization: bearerToken } = req.headers
+  const { id } = req.params
+  const { authorization: bearerToken } = req.headers
+  
+  let authToken = bearerToken
+
+  if(!authToken) return res.sendStatus(404)
+
+  authToken = bearerToken.replace("Bearer ", "")
+
+  try{
+      const fullUrl = await db.query("SELECT * FROM url WHERE id=$1", [id])
+      const getSession = await db.query("SELECT * FROM sessions WHERE token=$1", [authToken])
+
+      if(fullUrl.rowCount == 0) return res.sendStatus(404)
+      if(fullUrl.rows[0].userId !== getSession.rows[0].userId) return res.sendStatus(401)
+
+      await db.query("DELETE FROM url WHERE id=$1", [id])
       
-    const authToken = bearerToken.replace("Bearer ", "")
-    if(!authToken) return res.status(401).send("token não informado");
+      res.sendStatus(204)
 
-    const { id } = req.params;
-    const { userId } = res.locals;
-    try {
-      const urlToDelete  = await db.query('DELETE FROM url WHERE id = $1', [id])
-      const selecUrl = await db.query(`SELECT * FROM url WHERE id=$1;`, [id]);
-      if (selecUrl.rows === 0) return res.sendStatus(204)
-      if(userId !== selecUrl.rows[0].userId) {
-          return res.sendStatus(401)
 
-      }else{
-        return res.status(404).send(urlToDelete )
-      }    
-    } catch (error) {
-      res.status(500).send(error.message);
-    }
+  }catch(err){
+      res.status(500).send(err.message)
+  }
   }
