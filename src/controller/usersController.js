@@ -8,7 +8,7 @@ export async function getUser (req, res) {
     try {
       const session = await db.query(`SELECT * FROM sessions WHERE "userToken"=$1`, [authToken])
 
-        if(session.rowCount == 0) return res.sendStatus(401)
+        if(session.rows == 0) return res.sendStatus(401)
       const userInfo = await db.query(
           `
           SELECT 
