@@ -58,21 +58,23 @@ export async function redirectUrl (req, res) {
 }
 
 export async function deleteUrl (req, res) {
+    const { authorization: bearerToken } = req.headers
+      
+    const authToken = bearerToken.replace("Bearer ", "")
+    if(!authToken) return res.status(401).send("token não informado");
+
     const { id } = req.params;
     const { userId } = res.locals;
     try {
       const deleteUrl = await db.query('DELETE FROM url WHERE id = $1', [id])
       const selecUrl = await db.query(`SELECT * FROM url WHERE id=$1;`, [id]);
-      if (selecUrl.rowCount === 0) return res.status(404).send("Epa! Não encontramos essa URL!")
+      if (selecUrl.rowCount < 1) return res.sendStatus(404)
       if(userId !== selecUrl.rows[0].userId) {
-          return res.status(401).send("Essa URL não te pertence, colega! Não pode deletá-la!")
+          return res.sendStatus(401)
 
       }else{
-        return deleteUrl
-      }
-
-      res.status(204).send("URL deletada!");
-       
+        return res.status(204).send(deleteUrl)
+      }    
     } catch (error) {
       res.status(500).send(error.message);
     }

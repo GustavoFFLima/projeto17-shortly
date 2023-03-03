@@ -2,6 +2,11 @@ import { db } from "../config/database.js";
 
 export async function getUser (req, res) {
     const { id } = res.locals;
+    const { authorization: bearerToken } = req.headers
+      
+    const authToken = bearerToken.replace("Bearer ", "")
+    if(!authToken) return res.status(401).send("token não informado")
+
     try {
       const { rows: [userInfo] } = await db
         .query(
@@ -25,7 +30,7 @@ export async function getUser (req, res) {
         `,
           [id]
         );
-      return res.status(200).send(user);
+      return res.status(200).send(userInfo, shortenedUrls);
     } catch (error) {
       return res.status(500).send(error.message);
   }
@@ -33,10 +38,6 @@ export async function getUser (req, res) {
 
 export async function getRanking (req, res) {
     try {
-      if (!success) {
-        return res.status(500).send('DB com problema');
-      }
-      return res.send(ranking);
     } catch (error) {
       return res.status(500).send('Problema no servidor');
     }
