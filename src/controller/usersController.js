@@ -32,8 +32,7 @@ GROUP BY users.id, users.name;
           `,
           [id]
         );
-        console.log(userInfo.rows[0])
-      return res.status(200).send(userInfo.rows[0]);
+      return res.status(200).send(userInfo.rows);
     } catch (error) {
       return res.status(500).send(error.message);
   }
