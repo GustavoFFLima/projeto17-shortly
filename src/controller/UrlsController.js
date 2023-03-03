@@ -45,12 +45,12 @@ export async function getUrlById (req, res) {
 export async function redirectUrl (req, res) {
     const identification = req.params.shortUrl;
     try{
-      const redirectUrl = await db.query(`SELECT * FROM url WHERE "id"=$1`,[identification])
+      const redirectUrl = await db.query(`SELECT * FROM url WHERE "shortUrl"=$1`,[identification])
       
       if(redirectUrl.rows === 0) return res.sendStatus(404)
 
       const upVisits = redirectUrl.rows[0].visitCount +1
-      await db.query(`UPDATE url SET "visitCount" = $1 WHERE "id" = $2`, [upVisits, identification])
+      await db.query(`UPDATE url SET "visitCount" = $1 WHERE "shortUrl" = $2`, [upVisits, identification])
       const url = redirectUrl.rows[0].url
       console.log(upVisits)
       return res.redirect(302, url)
