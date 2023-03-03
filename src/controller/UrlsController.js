@@ -69,14 +69,14 @@ export async function deleteUrl (req, res) {
     const { id } = req.params;
     const { userId } = res.locals;
     try {
-      const deleteUrl = await db.query('DELETE FROM url WHERE id = $1', [id])
+      const urlToDelete  = await db.query('DELETE FROM url WHERE id = $1', [id])
       const selecUrl = await db.query(`SELECT * FROM url WHERE id=$1;`, [id]);
       if (selecUrl.rowCount < 1) return res.sendStatus(404)
       if(userId !== selecUrl.rows[0].userId) {
           return res.sendStatus(401)
 
       }else{
-        return res.status(204).send(deleteUrl)
+        return res.status(204).send(urlToDelete )
       }    
     } catch (error) {
       res.status(500).send(error.message);
