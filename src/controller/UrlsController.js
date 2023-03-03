@@ -46,8 +46,10 @@ export async function redirectUrl (req, res) {
   const identification = req.params.shortUrl;
   try{
     const redirectUrl = await db.query(`SELECT * FROM url WHERE "short"=$1`,[identification])
-    
-    if(redirectUrl.rows === 0) return res.sendStatus(404)
+    console.log(identification)
+    if(!redirectUrl) {
+      return res.sendStatus(404)
+    }
 
     const upVisits = redirectUrl.rows[0].visitCount +1
     await db.query(`UPDATE url SET "visitCount" = $1 WHERE "short" = $2`, [upVisits, identification])
@@ -55,7 +57,7 @@ export async function redirectUrl (req, res) {
     return res.redirect(302, url)
 
   } catch (error) {
-    return res.status(500).send(error.message);
+    return res.status(404).send(error.message);
   }
 }
 

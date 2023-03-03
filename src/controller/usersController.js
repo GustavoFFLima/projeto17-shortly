@@ -2,10 +2,10 @@ import { db } from "../config/database.js";
 
 export async function getUser (req, res) {
     const { id } = res.locals;
-    const { authorization: bearerToken } = req.headers
+    // const { authorization: bearerToken } = req.headers
       
-    const authToken = bearerToken.replace("Bearer ", "")
-    if(!authToken) return res.status(401).send("token não informado")
+    // const authToken = bearerToken.replace("Bearer ", "")
+    // if(!authToken) return res.status(401).send("token não informado")
 
     try {
       const userInfo = await db
@@ -32,6 +32,7 @@ GROUP BY users.id, users.name;
           `,
           [id]
         );
+        console.log(userInfo)
       return res.status(200).send(userInfo.rows);
     } catch (error) {
       return res.status(500).send(error.message);
