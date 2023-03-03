@@ -49,7 +49,7 @@ export async function redirectUrl (req, res) {
 
       const updatedVisits = redirectUrl.rows[0].visitCount +1
       await db.query(`UPDATE url SET "visitCount" = $1 WHERE "shortUrl" = $2`, [updatedVisits, identification])
-      res.redirect(redirectUrl.rows[0].url)
+      res.status(302).redirect(redirectUrl.rows[0].url)
 
     } catch (error) {
       return res.status(500).send(error.message);
