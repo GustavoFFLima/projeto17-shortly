@@ -12,6 +12,8 @@ export async function shorten (req, res) {
     try{
         const session = await db.query(`SELECT * FROM sessions WHERE "userToken"=$1`,[authToken])
 
+        if(session.rowCount === 0) return res.status(401).send("Faça login novamente")
+
         await db.query(`INSERT INTO url ("short", url, "userId", "visitCount") VALUES ($1,$2,$3, 0)`, [identification, url, session.rows[0].userId])
 
         const urlId = await db.query(`SELECT * FROM url WHERE "short"=$1`,[identification])
