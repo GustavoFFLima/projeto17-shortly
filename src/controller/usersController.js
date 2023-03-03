@@ -32,7 +32,7 @@ GROUP BY users.id, users.name;
           `,
           [id]
         );
-      return res.status(200).send(userInfo);
+      return res.status(200).send(userInfo.rows[0]);
     } catch (error) {
       return res.status(500).send(error.message);
   }
