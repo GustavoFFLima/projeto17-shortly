@@ -28,22 +28,14 @@ export async function shorten (req, res) {
   }
 
 export async function getUrlById (req, res) {
-    const { id } = req.params;
-
+    const reqUrlId = req.params.id;
     try {
-      const { rows: [url] } = await db.query('SELECT id, "shortUrl", url, "userId" FROM url WHERE id = $1', [id]);
-      return { success: true, url, error: undefined };
-    } catch (error) {
-      return { success: false, url: undefined, error };
-    }
+      const checkUrl = await db.query('SELECT * FROM url WHERE id = $1', [reqUrlId]);
+    
+      const { id, userId, url, short, visitCount, createdAt } = checkUrl.rows[0]
+      if (checkUrl.rows === 0) return res.sendStatus(404);
+      return res.send({id, url, short});
 
-    try {
-      const { success, url, error } = await shortUrl.getById(id);
-      if (!success) {
-        res.sendStatus(500);
-      }
-      if (!url) res.sendStatus(404);
-      return res.send(url);
     } catch (error) {
       res.status(500).send(error.message);
     }
