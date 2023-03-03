@@ -71,7 +71,7 @@ export async function deleteUrl (req, res) {
     try {
       const urlToDelete  = await db.query('DELETE FROM url WHERE id = $1', [id])
       const selecUrl = await db.query(`SELECT * FROM url WHERE id=$1;`, [id]);
-      if (selecUrl.rowCount < 1) return res.sendStatus(204)
+      if (selecUrl.rowCount === 0) return res.sendStatus(204)
       if(userId !== selecUrl.rows[0].userId) {
           return res.sendStatus(401)
 
