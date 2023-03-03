@@ -11,23 +11,24 @@ export async function getUser (req, res) {
       const userInfo = await db
         .query(
           `
-          SELECT users.id AS "id", users.name AS "name", SUM(url."visitCount") AS "visitCount", ARRAY
-          (SELECT JSON_BUILD_OBJECT('id',
-            url.id,
-            'short',
-            url."short",
-            'url',
-            url.urL,
-            'visitCount',
-            url."visitCount")
-          FROM users
-          JOIN url
-            ON url."userId" = users.id
-          WHERE users.id = $1) AS "shortenedUrls"
-          FROM url
-          JOIN USERS ON url."userId" = users.id
-          WHERE "userId" = $2
-          GROUP BY users.id;
+          SELECT 
+  users.id AS "id", 
+  users.name AS "name", 
+  SUM(url."visitCount") AS "visitCount", 
+  ARRAY(
+    SELECT JSON_BUILD_OBJECT(
+      'id', url.id,
+      'short', url."short",
+      'url', url.urL,
+      'visitCount', url."visitCount"
+    )
+    FROM url
+    WHERE url."userId" = users.id
+  ) AS "shortenedUrls"
+FROM url
+JOIN users ON url."userId" = users.id
+WHERE users.id = $1
+GROUP BY users.id, users.name;
           `,
           [id]
         );
