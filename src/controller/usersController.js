@@ -7,7 +7,7 @@ export async function getUser (req, res) {
       if (!success) {
         return res.status(500).send('DB com problema');
       }
-      return res.send(user);
+      return res.status(200).send(user);
     } catch (error) {
       return res.status(500).send('Problema no servidor');
     }
