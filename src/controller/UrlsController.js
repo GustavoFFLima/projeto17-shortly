@@ -32,10 +32,10 @@ export async function getUrlById (req, res) {
     try {
       const checkUrl = await db.query('SELECT * FROM url WHERE id = $1', [reqUrlId]);
     
-      const { id, userId, url, short, visitCount, createdAt } = checkUrl.rows[0]
-      console.log(id, userId, url, short, visitCount, createdAt )
+      const { id, userId, url, shotUrl, visitCount, createdAt } = checkUrl.rows[0]
+      console.log(id, userId, url, shotUrl, visitCount, createdAt )
       if (checkUrl.rows === 0) return res.sendStatus(404);
-      return res.send({id, shotUrl:short, url});
+      return res.send({id, shotUrl, url});
 
     } catch (error) {
       res.status(500).send(error.message);
