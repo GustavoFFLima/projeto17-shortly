@@ -27,7 +27,7 @@ export async function shorten (req, res) {
     }
   }
 
-export async function getShortUrlById (req, res) {
+export async function getUrlById (req, res) {
     const { id } = req.params;
 
     try {
@@ -49,7 +49,7 @@ export async function getShortUrlById (req, res) {
     }
   }
 
-export async function redirectShortUrl (req, res) {
+export async function redirectUrl (req, res) {
     const identification = req.params.shortUrl;
     try {
       const { success, url, error } = await shortUrl.getByShortUrl(identification);
@@ -67,7 +67,7 @@ export async function redirectShortUrl (req, res) {
     }
   }
 
-export async function deleteShortUrl (req, res) {
+export async function deleteUrl (req, res) {
     const { id } = req.params;
     const { userId } = res.locals;
     try {
