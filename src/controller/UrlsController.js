@@ -33,6 +33,7 @@ export async function getUrlById (req, res) {
       const checkUrl = await db.query('SELECT * FROM url WHERE id = $1', [reqUrlId]);
     
       const { id, userId, url, short, visitCount, createdAt } = checkUrl.rows[0]
+      console.log(id, userId, url, short, visitCount, createdAt )
       if (checkUrl.rows === 0) return res.sendStatus(404);
       return res.send({id, shotUrl:short, url});
 
@@ -62,6 +63,7 @@ export async function deleteUrl (req, res) {
     const { id } = req.params;
     const { userId } = res.locals;
     try {
+      const deleteUrl = await db.query('DELETE FROM url WHERE id = $1', [id])
       const { success, url, error } = await shortUrl.getById(id);
       if (!success) {
         return res.sendStatus(500);
@@ -72,8 +74,8 @@ export async function deleteUrl (req, res) {
       if (!deleteSuccess) {
         return res.sendStatus(500);
       }
-      return res.sendStatus(204);
+      return res.status(204).send({ success: true, error: undefined })
     } catch (error) {
-
+      res.status(500).send(error.message);
     }
   }
