@@ -1,15 +1,14 @@
 import { db } from "../config/database.js";
 
 export async function getUser (req, res) {
-    const { id } = res.locals;
     const { authorization: bearerToken } = req.headers
-      
+    if(!bearerToken) return res.sendStatus(401)
     const authToken = bearerToken.replace("Bearer ", "")
-    if(!authToken) return res.status(401).send("token não informado")
 
     try {
-      const userInfo = await db
-        .query(
+      // const session = await db.query(`SELECT * FROM sessions WHERE "userToken"=$1`, [authToken])
+      //   if(session.rows == 0) return res.sendStatus(401)
+      const userInfo = await db.query(
           `
           SELECT 
   users.id AS "id", 
@@ -32,7 +31,6 @@ GROUP BY users.id, users.name;
           `,
           [id]
         );
-        console.log(userInfo.rows)
       return res.status(200).send(userInfo.rows[0]);
     } catch (error) {
       return res.status(500).send(error.message);
@@ -42,7 +40,7 @@ GROUP BY users.id, users.name;
 export async function getRanking (req, res) {
     try {
     } catch (error) {
-      return res.status(500).send('Problema no servidor');
+      return res.status(500).send(error.message);
     }
 }
 
