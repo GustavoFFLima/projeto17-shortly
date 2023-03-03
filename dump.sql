@@ -53,7 +53,7 @@ CREATE TABLE public.url (
     id serial,
     "userId" integer NOT NULL,
     url text NOT NULL,
-    short character varying(150) NOT NULL,
+    shortUrl character varying(150) NOT NULL,
     "visitCount" integer DEFAULT 0 NOT NULL,
     "createdAt" timestamp without time zone DEFAULT now() NOT NULL
 );

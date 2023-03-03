@@ -33,7 +33,6 @@ export async function getUrlById (req, res) {
       const checkUrl = await db.query('SELECT * FROM url WHERE id = $1', [reqUrlId]);
     
       const { id, userId, url, shotUrl, visitCount, createdAt } = checkUrl.rows[0]
-      console.log(id, userId, url, shotUrl, visitCount, createdAt )
       if (checkUrl.rows === 0) return res.sendStatus(404);
       return res.send({id, shotUrl, url});
 
@@ -44,18 +43,16 @@ export async function getUrlById (req, res) {
 
 export async function redirectUrl (req, res) {
     const identification = req.params.shortUrl;
-    try {
-      const { success, url, error }= await db.query('SELECT id, url FROM url WHERE "shortUrl" = $1', [identification])
-      if (!success) return res.sendStatus(500)
-      if (!url) return res.sendStatus(404);
-      const { success: incrementSuccess, error: incrementError } = await shortUrl.incrementVisitsCountById(url.id);
-      if (!incrementSuccess) {
-        return res.sendStatus(500);
-      return { success: true, url, error: undefined }
-      }
-      return res.redirect(url.url);
+    try{
+      const redirectUrl = await db.query(`SELECT * FROM url WHERE "shortUrl"=$1`,[identification])
+      if(redirectUrl.rowCount == 0) return res.sendStatus(404)
+
+      const updatedVisits = redirectUrl.rows[0].visitCount +1
+      await db.query(`UPDATE url SET "visitCount" = $1 WHERE "shortUrl" = $2`, [updatedVisits, identification])
+      res.redirect(redirectUrl.rows[0].url)
+
     } catch (error) {
-      return res.status(500).send({ success: false, url: undefined, error });
+      return res.status(500).send(error.message);
     }
 }
 
