@@ -43,7 +43,7 @@ export async function getUrlById (req, res) {
   }
 
 export async function redirectUrl (req, res) {
-    const identification = req.params.shortUrl;
+    const {identification} = req.params;
     try{
       const redirectUrl = await db.query(`SELECT * FROM url WHERE "shortUrl"=$1`,[identification])
 
