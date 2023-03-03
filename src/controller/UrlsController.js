@@ -27,6 +27,14 @@ export async function shorten (req, res) {
 
 export async function getShortUrlById (req, res) {
     const { id } = req.params;
+
+    try {
+      const { rows: [url] } = await db.query('SELECT id, "shortUrl", url, "userId" FROM url WHERE id = $1', [id]);
+      return { success: true, url, error: undefined };
+    } catch (error) {
+      return { success: false, url: undefined, error };
+    }
+
     try {
       const { success, url, error } = await shortUrl.getById(id);
       if (!success) {
@@ -35,7 +43,7 @@ export async function getShortUrlById (req, res) {
       if (!url) res.sendStatus(404);
       return res.send(url);
     } catch (error) {
-      res.sendStatus(500);
+      res.status(500).send(error.message);
     }
   }
 
